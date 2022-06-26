@@ -55,6 +55,10 @@ public class MessageReceiverListenerImpl implements MessageReceiverListener {
 
                 LOGGER.info("Receiving delivery receipt for message '{}' from {} to {}: {}",
                     messageId, deliverSm.getSourceAddr(), deliverSm.getDestAddress(), delReceipt);
+                LOGGER.info("WWWWWWWWWWWWWWWEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEE");
+                LOGGER.info("WWWWWWWWWWWWWWWEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEE");
+                LOGGER.info("WWWWWWWWWWWWWWWEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEE");
+                LOGGER.info("WWWWWWWWWWWWWWWEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEE");
             } catch (InvalidDeliveryReceiptException e) {
                 LOGGER.error("Failed getting delivery receipt", e);
             }

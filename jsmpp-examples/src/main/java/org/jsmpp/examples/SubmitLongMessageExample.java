@@ -19,15 +19,7 @@ import java.util.Random;
 
 import org.jsmpp.InvalidResponseException;
 import org.jsmpp.PDUException;
-import org.jsmpp.bean.BindType;
-import org.jsmpp.bean.DataCodings;
-import org.jsmpp.bean.ESMClass;
-import org.jsmpp.bean.NumberingPlanIndicator;
-import org.jsmpp.bean.OptionalParameter;
-import org.jsmpp.bean.OptionalParameters;
-import org.jsmpp.bean.RegisteredDelivery;
-import org.jsmpp.bean.SMSCDeliveryReceipt;
-import org.jsmpp.bean.TypeOfNumber;
+import org.jsmpp.bean.*;
 import org.jsmpp.extra.NegativeResponseException;
 import org.jsmpp.extra.ResponseTimeoutException;
 import org.jsmpp.session.BindParameter;
@@ -40,26 +32,88 @@ import org.slf4j.LoggerFactory;
 
 /**
  * @author uudashr
- *
  */
 public class SubmitLongMessageExample {
-    private static final Logger log = LoggerFactory.getLogger(SubmitLongMessageExample.class);
-    private static final TimeFormatter TIME_FORMATTER = new AbsoluteTimeFormatter();
-    private static Random RANDOM = new Random();
-    
+    public static final Logger log = LoggerFactory.getLogger(SubmitLongMessageExample.class);
+    public static final TimeFormatter TIME_FORMATTER = new AbsoluteTimeFormatter();
+    public static Random RANDOM = new Random();
+    public static String userName = "YarangandmFara";
+    public static String password = "Yar@GF51";
+    public static String providedSystemType = "SMPP";
+    public static String serverIpAddress = "10.200.114.15";
+    public static String destinationPhoneNumber = "989209206311";
+    public static String serverPortString = "2775";
+    public static int serverPortNumber = 2775;
+    public static String sourcePhoneNumber = "986369";
+    public static BindType bindTrx = BindType.BIND_TRX;
+    public static ESMClass esmClass = new ESMClass();
+    public static DataCoding dataCoding = new GeneralDataCoding(Alphabet.ALPHA_8_BIT);
+    public static String scheduleDeliveryTime = TIME_FORMATTER.format(new Date());
+    public static RegisteredDelivery registeredDelivery = new RegisteredDelivery(SMSCDeliveryReceipt.DEFAULT);
+
+    /// changer for rightel
     public static void main(String[] args) {
-        try (SMPPSession session = new SMPPSession()) {
-            session.connectAndBind("wyless.ns1.name", 8056, new BindParameter(BindType.BIND_TX, "test", "test", "cp", TypeOfNumber.UNKNOWN, NumberingPlanIndicator.UNKNOWN, null));
+        try (
+                SMPPSession session = new SMPPSession()
+        ) {
+
+
+//            new Tlv(
+//                    SmppConstants.TAG_MESSAGE_PAYLOAD,
+//                    CharsetUtil.encode(messageBody, CharsetUtil.CHARSET_UCS_2),
+//                    "message_payload");
+            byte[] bytes="hello".getBytes();
+//            OptionalParameter aShort = new OptionalParameter.Payload_type(OptionalParameter.Tag.MESSAGE_PAYLOAD, bytes);
+//            OptionalParameter aShort = new OptionalParameter.Payload_type(OptionalParameter.Tag.MESSAGE_PAYLOAD, bytes);
+
+            session.connectAndBind(
+                    serverIpAddress,
+                    serverPortNumber,
+                    new BindParameter(
+                            bindTrx,
+                            userName,
+                            password,
+                            providedSystemType,
+                            TypeOfNumber.INTERNATIONAL,
+                            NumberingPlanIndicator.ISDN,
+                            null)
+            );
 
             final int totalSegments = 3;
-            OptionalParameter sarMsgRefNum = OptionalParameters.newSarMsgRefNum((short)RANDOM.nextInt());
-            OptionalParameter sarTotalSegments = OptionalParameters.newSarTotalSegments(totalSegments);
 
-            for (int i = 0; i < totalSegments; i++) {
-                final int seqNum = i + 1;
-                String message = "Message part " + seqNum + " of " + totalSegments + " ";
-                OptionalParameter sarSegmentSeqnum = OptionalParameters.newSarSegmentSeqnum(seqNum);
-                String messageId = submitMessage(session, message, sarMsgRefNum, sarSegmentSeqnum, sarTotalSegments);
+            // optional one
+            OptionalParameter sarMsgRefNum = OptionalParameters
+                    .newSarMsgRefNum(
+                            (short) RANDOM.nextInt()
+                    );
+
+            // optional three
+            OptionalParameter sarTotalSegments = OptionalParameters.newSarTotalSegments(
+                    totalSegments
+            );
+
+            for (int counter = 0; counter < totalSegments; counter++) {
+
+                final int seqNum =
+                        counter + 1;
+
+                String message =
+                        "Message part " + seqNum + " of " + totalSegments + " ";
+
+                // optional two
+                OptionalParameter sarSegmentSeqnum = OptionalParameters.newSarSegmentSeqnum(
+                        seqNum
+                );
+
+                /// call
+                String messageId = submitMessage(
+                        session,
+                        message,
+                        sarMsgRefNum,
+                        sarSegmentSeqnum,
+                        sarTotalSegments
+                );
+
                 log.info("Message submitted, message_id is {}", messageId);
             }
 
@@ -69,13 +123,46 @@ public class SubmitLongMessageExample {
             log.error("Failed connect and bind to host", e);
         }
     }
-    
-    public static String submitMessage(SMPPSession session, String message, OptionalParameter sarMsgRefNum, OptionalParameter sarSegmentSeqnum, OptionalParameter sarTotalSegments) {
+
+
+    /// definition
+    public static String submitMessage(
+            SMPPSession session,
+            String message,
+            OptionalParameter sarMsgRefNum,
+            OptionalParameter sarSegmentSeqNum,
+            OptionalParameter sarTotalSegments
+    ) {
         String messageId = null;
         try {
-            SubmitSmResult submitSmResult = session.submitShortMessage("CMT", TypeOfNumber.INTERNATIONAL, NumberingPlanIndicator.UNKNOWN, "1616", TypeOfNumber.INTERNATIONAL, NumberingPlanIndicator.UNKNOWN, "628176504657", new ESMClass(), (byte)0, (byte)1,  TIME_FORMATTER
-                .format(new Date()), null, new RegisteredDelivery(SMSCDeliveryReceipt.DEFAULT), (byte)0, DataCodings.ZERO, (byte)0, message.getBytes(), sarMsgRefNum, sarSegmentSeqnum, sarTotalSegments);
+            String scheduleDeliveryTime = TIME_FORMATTER.format(new Date());
+            SubmitSmResult submitSmResult =
+                    session
+                            .submitShortMessage(
+                                    null,
+                                    TypeOfNumber.ABBREVIATED,
+                                    NumberingPlanIndicator.ISDN,
+                                    sourcePhoneNumber,
+                                    TypeOfNumber.INTERNATIONAL,
+                                    NumberingPlanIndicator.ISDN,
+                                    destinationPhoneNumber,
+                                    esmClass,
+                                    (byte) 0,
+                                    (byte) 0,
+                                    null,
+                                    null,
+                                    registeredDelivery,
+                                    (byte) 1,
+                                    dataCoding,
+                                    (byte) 0,
+                                    message.getBytes(),
+                                    sarMsgRefNum,
+                                    /*optional parameter*/ sarSegmentSeqNum,
+                                    /*optional parameter*/ sarTotalSegments
+                            );
+
             messageId = submitSmResult.getMessageId();
+
         } catch (PDUException e) {
             // Invalid PDU parameter
             log.error("Invalid PDU parameter", e);
@@ -91,6 +178,7 @@ public class SubmitLongMessageExample {
         } catch (IOException e) {
             log.error("I/O error occurred", e);
         }
+
         return messageId;
     }
 }
